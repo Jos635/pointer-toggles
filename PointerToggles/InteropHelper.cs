@@ -28,5 +28,17 @@ namespace PointerToggles
         [DllImport("user32.dll", EntryPoint = "SystemParametersInfo", SetLastError = true)]
         public static extern bool SystemParametersInfoSet(uint action, uint param, IntPtr vparam, SPIF fWinIni);
         public const UInt32 SPI_SETMOUSE = 0x0004;
+
+        public static bool ToggleMouseAccelleration()
+        {
+            var mouseParams = new int[3];
+            SystemParametersInfoGet(SPI_GETMOUSE, 0, GCHandle.Alloc(mouseParams, GCHandleType.Pinned).AddrOfPinnedObject(), 0);
+
+            mouseParams[2] = mouseParams[2] == 0 ? 1 : 0;
+
+            SystemParametersInfoSet(SPI_SETMOUSE, 0, GCHandle.Alloc(mouseParams, GCHandleType.Pinned).AddrOfPinnedObject(), SPIF.SPIF_SENDCHANGE);
+
+            return mouseParams[2] == 1;
+        }
     }
 }
