@@ -69,5 +69,15 @@ namespace PointerToggles.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon AppIconAccellerated {
+            get {
+                object obj = ResourceManager.GetObject("AppIconAccellerated", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

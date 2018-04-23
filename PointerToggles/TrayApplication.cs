@@ -13,19 +13,40 @@ namespace PointerToggles
     {
         private NotifyIcon trayIcon;
 
+        private Timer timer;
+
         public TrayApplication()
         {
             trayIcon = new NotifyIcon()
             {
-                Icon = Resources.AppIcon,
+                Icon = InteropHelper.MouseAccelleration ? Resources.AppIconAccellerated : Resources.AppIcon,
                 ContextMenu = new ContextMenu(new MenuItem[] {
-                new MenuItem("Exit", Exit)
-            }),
+                    new MenuItem("Exit", Exit)
+                }),
                 Visible = true
             };
 
             trayIcon.DoubleClick += TrayIcon_DoubleClick;
             trayIcon.ContextMenu = BuildContextMenu();
+
+            timer = new Timer()
+            {
+                Enabled = true,
+                Interval = (int)TimeSpan.FromMinutes(1).TotalMilliseconds
+            };
+
+            timer.Tick += Timer_Tick;
+        }
+
+        private void Timer_Tick(object sender, EventArgs e) => UpdateTrayIcon();
+
+        private void UpdateTrayIcon()
+        {
+            var mouseAccelleration = InteropHelper.MouseAccelleration;
+            var tipText = $"Mouse accelleration: {(mouseAccelleration ? "On" : "Off")}";
+
+            trayIcon.Icon = mouseAccelleration ? Resources.AppIconAccellerated : Resources.AppIcon;
+            trayIcon.Text = tipText;
         }
 
         private static ContextMenu BuildContextMenu()
@@ -42,9 +63,7 @@ namespace PointerToggles
         private void TrayIcon_DoubleClick(object sender, EventArgs e)
         {
             var enabled = InteropHelper.ToggleMouseAccelleration();
-            var tipText = $"Mouse accelleration: {(enabled ? "On" : "Off")}";
-            trayIcon.ShowBalloonTip(1000, "Pointer Toggles", tipText, ToolTipIcon.Info);
-            trayIcon.Text = tipText;
+            UpdateTrayIcon();
         }
 
         void Exit(object sender, EventArgs e)
